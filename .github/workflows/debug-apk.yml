@@ -1,8 +1,8 @@
-name: Debug APK (safe HOME test)
+name: Glass TV Enhanced APK
 
 on:
   push:
-    branches: [main, prism-home-fix, 'fix/**']
+    branches: [main, prism-home-fix, glass-tv-production, 'fix/**']
   pull_request:
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ jobs:
         with:
           packages: platforms;android-34 build-tools;34.0.0
       - uses: gradle/actions/setup-gradle@v4
-      # Keep the test key across runs so subsequent test APKs can update in place.
+      # Preserve the existing debug signing cache key for in-place HOME-package updates.
       # This is a debug key, not a release credential; cache eviction can still change it.
       - uses: actions/cache@v4
         with:
@@ -36,17 +36,33 @@ jobs:
         continue-on-error: true
         working-directory: launcher
         run: bash ./gradlew --no-daemon lintDebug
+      - name: Verify signed APK and package identity
+        run: |
+          APK=launcher/app/build/outputs/apk/debug/app-debug.apk
+          TOOLS="$ANDROID_HOME/build-tools/34.0.0"
+          mkdir -p apk
+          "$TOOLS/apksigner" verify --verbose --print-certs --min-sdk-version 30 --max-sdk-version 30 "$APK" > apk/SIGNING-CERTIFICATE.txt
+          "$TOOLS/zipalign" -c 4 "$APK"
+          "$TOOLS/aapt" dump badging "$APK" > apk/APK-INFO.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          info = Path('apk/APK-INFO.txt').read_text()
+          assert "package: name='com.gathin.tvhome.hometest'" in info
+          assert "versionCode='5'" in info
+          assert "versionName='2.3.1'" in info
+          assert "application-label:'Glass TV Enhanced'" in info
+          PY
       - name: Prepare download
         run: |
           mkdir -p apk
-          cp launcher/app/build/outputs/apk/debug/app-debug.apk apk/Glass-TV-Enhanced-HOME-test.apk
-          cp docs/PRISM-HOME-TEST.md apk/INSTALL-AND-TEST.md
+          cp launcher/app/build/outputs/apk/debug/app-debug.apk apk/Glass-TV-Enhanced.apk
+          cp docs/PRODUCTION-INSTALL.md apk/INSTALL.md
           cd apk
           sha256sum Glass-TV-Enhanced-HOME-test.apk > SHA256SUMS.txt
       - name: Download this artifact in Safari
         uses: actions/upload-artifact@v4
         with:
-          name: Glass-TV-Enhanced-HOME-test-${{ github.run_number }}
+          name: Glass-TV-Enhanced-${{ github.run_number }}
           path: apk/
           if-no-files-found: error
           retention-days: 30
@@ -54,7 +70,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: home-test-reports-${{ github.run_number }}
+          name: glass-tv-reports-${{ github.run_number }}
           path: |
             launcher/app/build/reports/tests/
             launcher/app/build/reports/lint-results-debug.*

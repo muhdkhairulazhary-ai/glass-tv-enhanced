@@ -1,6 +1,9 @@
 # Safe HOME test on PRISM+ Google TV
 
-Target: PRISM+ SW7_PrismPlus (`umeda`), Android 11. **Not device-tested.**
+Target: PRISM+ SW7_PrismPlus (`umeda`), Android 11. **Owner confirmed working:** physical Home,
+accessibility helper and Home after reboot, with Google TV Launcher still enabled.
+This page preserves the original HOME-test investigation and setup notes. For the current APK name,
+in-place upgrade and signing precautions, use [the production guide](PRODUCTION-INSTALL.md).
 Keep Google TV (`com.google.android.apps.tv.launcherx`) and its HomeActivity enabled.
 No root, system changes, debloating or TV connection is part of the build workflow.
 Do not run `launcher/build-and-install.sh`, its PowerShell equivalent, or the old

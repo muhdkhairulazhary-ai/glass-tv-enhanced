@@ -1,8 +1,9 @@
 # Glass TV Enhanced
 
-**PRISM+ / keep-stock-launcher HOME test:** use the [safe APK and iPhone guide](docs/PRISM-HOME-TEST.md).
+**PRISM+ / keep Google TV enabled:** use the [production APK and iPhone upgrade guide](docs/PRODUCTION-INSTALL.md).
 Do not use the older build-and-install or debloating route below for this TV; it disables the stock launcher.
-The new HOME handling is experimental until tested with the physical remote on your device.
+The owner confirmed physical Home, accessibility, and Home after reboot on SW7 Android 11 with Google TV enabled.
+The production update keeps that HOME implementation and the installed `com.gathin.tvhome.hometest` package.
 
 **Your Android TV. Fast, ad-free and truly yours.** A fork of [Glass TV](https://github.com/cocombee/glass-tv) by
 Gathin that adds widgets, a wallpaper studio and a choice of language, all driven from an ordinary TV remote.
