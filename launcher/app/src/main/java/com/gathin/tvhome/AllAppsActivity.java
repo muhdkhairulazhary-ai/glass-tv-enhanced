@@ -157,6 +157,7 @@ public class AllAppsActivity extends Activity {
         apps.add(at + 3, new App(getString(R.string.tile_clean), new ComponentName(this, MainActivity.class), null, getDrawable(R.drawable.ic_clean)));
         // The launcher's language, named in English as well so anyone can find it.
         apps.add(at + 4, new App(getString(R.string.tile_language), new ComponentName(this, AllAppsActivity.class), null, getDrawable(R.drawable.ic_language)));
+        apps.add(new App(getString(R.string.home_controls), new ComponentName(this, HomeSettingsActivity.class), null, getDrawable(R.drawable.ic_home_settings)));
         return apps;
     }
 
@@ -164,7 +165,8 @@ public class AllAppsActivity extends Activity {
     private static boolean isTool(App a) {
         String c = a.component.getClassName();
         return c.equals(MainActivity.class.getName()) || c.equals(QuotesActivity.class.getName())
-                || c.equals(PrayerActivity.class.getName()) || c.equals(AllAppsActivity.class.getName());
+                || c.equals(PrayerActivity.class.getName()) || c.equals(AllAppsActivity.class.getName())
+                || c.equals(HomeSettingsActivity.class.getName());
     }
 
     private boolean isEpl(App a) {
@@ -261,8 +263,10 @@ public class AllAppsActivity extends Activity {
                 // A soft light glow round the selected tile: its own shadow, drawn white and dim.
                 v.setElevation(has ? 18 * d : 0);
                 // Centred: the ambient shadow drawn as light, no spot shadow falling below.
-                v.setOutlineAmbientShadowColor(0xCCFFFFFF);
-                v.setOutlineSpotShadowColor(0x00000000);
+                if (android.os.Build.VERSION.SDK_INT >= 28) {
+                    v.setOutlineAmbientShadowColor(0xCCFFFFFF);
+                    v.setOutlineSpotShadowColor(0x00000000);
+                }
                 name.animate().alpha(has ? 1f : 0f).setDuration(150).start();
             });
             return new Tile(cell);
@@ -295,7 +299,8 @@ public class AllAppsActivity extends Activity {
                     chooseLanguage();
                     return;
                 }
-                if (a.component.getClassName().equals(QuotesActivity.class.getName())
+                if (a.component.getClassName().equals(HomeSettingsActivity.class.getName())
+                        || a.component.getClassName().equals(QuotesActivity.class.getName())
                         || a.component.getClassName().equals(PrayerActivity.class.getName())) {
                     startActivity(new Intent().setComponent(a.component));
                     finish();

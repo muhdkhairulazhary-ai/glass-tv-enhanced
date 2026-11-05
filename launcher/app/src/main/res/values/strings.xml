@@ -215,4 +215,11 @@
     <string name="f_fade">Fade</string>
     <string name="azan_import">Import azan</string>
     <!-- end of additions -->
+    <string name="home_controls" translatable="false">Home button setup</string>
+    <string name="home_choose" translatable="false">Choose default Home app</string>
+    <string name="home_accessibility" translatable="false">Open accessibility settings</string>
+    <string name="home_fallback_on" translatable="false">Enable Google TV Home fallback</string>
+    <string name="home_fallback_off" translatable="false">Turn off Google TV Home fallback</string>
+    <string name="home_diagnostics" translatable="false">Show HOME diagnostics</string>
+    <string name="home_fallback_warning" translatable="false">Enable the Glass TV Home accessibility helper separately. When Google TV Home appears, this option requests Glass TV instead. Google TV may briefly flash. It also redirects intentional visits to Google TV Home, but leaves Settings and other screens alone. Turn this option off here or disable the helper in Accessibility to recover. Google TV stays installed and enabled. This is experimental; remote behavior must be tested on your TV.</string>
 </resources>

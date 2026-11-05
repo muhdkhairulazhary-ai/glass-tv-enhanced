@@ -1,5 +1,9 @@
 # Glass TV Enhanced
 
+**PRISM+ / keep-stock-launcher HOME test:** use the [safe APK and iPhone guide](docs/PRISM-HOME-TEST.md).
+Do not use the older build-and-install or debloating route below for this TV; it disables the stock launcher.
+The new HOME handling is experimental until tested with the physical remote on your device.
+
 **Your Android TV. Fast, ad-free and truly yours.** A fork of [Glass TV](https://github.com/cocombee/glass-tv) by
 Gathin that adds widgets, a wallpaper studio and a choice of language, all driven from an ordinary TV remote.
 

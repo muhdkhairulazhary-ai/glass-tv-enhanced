@@ -21,14 +21,14 @@ public class PrayerTimesTest {
     }
 
     @Test
-    public void timesAndCountdown() {
+    public void timesAndClockFormat() {
         assertEquals(13 * 60 + 3, PrayerTimes.minutes("13:03:00"));
         assertEquals(-1, PrayerTimes.minutes("25:00:00"));
         assertEquals("1:03", PrayerTimes.format(13 * 60 + 3, false));
         assertEquals("13:03", PrayerTimes.format(13 * 60 + 3, true));
         assertEquals("12:05", PrayerTimes.format(5, false));
-        assertEquals("1 j 54 min", PrayerTimes.until(114));
-        assertEquals("7 min", PrayerTimes.until(7));
+        // until(Context, int) now uses translated Android resources. The old until(int)
+        // API no longer exists; its Malay-only assertions cannot run in this plain JVM suite.
     }
 
     @Test
