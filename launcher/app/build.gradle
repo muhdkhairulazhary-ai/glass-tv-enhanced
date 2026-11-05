@@ -23,6 +23,17 @@ android {
             manifestPlaceholders = [applicationLabel: 'Glass TV Enhanced · HOME test',
                                     homeHelperLabel: 'Glass TV HOME test · Home button']
         }
+        production {
+            // Separate from the working HOME-test package. Never use a generated debug key.
+            initWith debug
+            applicationIdSuffix '.production'
+            versionNameSuffix ''
+            debuggable false
+            signingConfig null
+            matchingFallbacks = ['debug']
+            manifestPlaceholders = [applicationLabel: 'Glass TV Enhanced',
+                                    homeHelperLabel: 'Glass TV Enhanced · Home button']
+        }
         release {
             // R8 strips and optimises the code (AndroidX included): smaller APK, faster start on a slow TV CPU.
             minifyEnabled true

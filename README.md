@@ -1,5 +1,8 @@
 # Glass TV Enhanced
 
+**Stable signing / parallel production migration:** see the [secure signing and iPhone guide](docs/STABLE-RELEASE.md).
+The new `com.gathin.tvhome.production` package keeps HOME-test-2 installed for recovery; production signing requires permanent Actions secrets.
+
 **PRISM+ / keep-stock-launcher HOME test:** use the [safe APK and iPhone guide](docs/PRISM-HOME-TEST.md).
 Do not use the older build-and-install or debloating route below for this TV; it disables the stock launcher.
 The new HOME handling is experimental until tested with the physical remote on your device.
