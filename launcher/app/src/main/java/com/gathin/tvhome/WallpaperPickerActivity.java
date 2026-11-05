@@ -222,8 +222,10 @@ public class WallpaperPickerActivity extends Activity {
 
     /** A soft light glow centred round a view: its ambient shadow, drawn white, with no spot shadow below. */
     private void glow(View v, boolean on) {
-        v.setOutlineAmbientShadowColor(0xFFFFFFFF);
-        v.setOutlineSpotShadowColor(0x00000000);
+        if (android.os.Build.VERSION.SDK_INT >= 28) {
+            v.setOutlineAmbientShadowColor(0xFFFFFFFF);
+            v.setOutlineSpotShadowColor(0x00000000);
+        }
         v.setElevation(on ? 22 * d : 0);
     }
 
@@ -708,8 +710,10 @@ public class WallpaperPickerActivity extends Activity {
         private void markRemove(TextView x, boolean on) {
             x.setBackground(round(on));
             x.animate().scaleX(on ? 1.35f : 1f).scaleY(on ? 1.35f : 1f).setDuration(150).start();
-            x.setOutlineAmbientShadowColor(0xFFFF5A4F);
-            x.setOutlineSpotShadowColor(0x00000000);
+            if (android.os.Build.VERSION.SDK_INT >= 28) {
+                x.setOutlineAmbientShadowColor(0xFFFF5A4F);
+                x.setOutlineSpotShadowColor(0x00000000);
+            }
             x.setElevation(on ? 18 * d : 0);
         }
 

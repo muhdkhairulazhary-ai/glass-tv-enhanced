@@ -343,6 +343,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        HomeDiagnostics.activity(this, "onCreate", getIntent());
+        HomeDiagnostics.selection(this);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         current = new java.lang.ref.WeakReference<>(this);
@@ -915,6 +917,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
+        HomeDiagnostics.activity(this, "onNewIntent", intent);
         if (eplDialog != null) eplDialog.dismiss();
         if (intent != null && intent.getBooleanExtra(CHOOSE_AZAN, false)) {
             // The Waktu Solat tile in All apps.
@@ -970,6 +974,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        HomeDiagnostics.activity(this, "onResume", getIntent());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_NOT_EXPORTED);
         } else {
@@ -1085,6 +1090,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onPause() {
         super.onPause();
+        HomeDiagnostics.activity(this, "onPause", getIntent());
         unregisterReceiver(packageReceiver);
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);

@@ -17,12 +17,22 @@ public class InputKeyService extends AccessibilityService {
     private static final String ACTION_VIEW_INPUTS = "com.android.tv.action.VIEW_INPUTS";
 
     @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        android.util.Log.i(HomeDiagnostics.TAG, "InputKeyService connected (TV input key only)");
+    }
+
+    @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        android.os.UserManager users = getSystemService(android.os.UserManager.class);
+        if (users == null || !users.isUserUnlocked()) return false;
         if (event.getKeyCode() != KeyEvent.KEYCODE_TV) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP) {
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             try {
                 startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException unavailable) {
+                android.util.Log.w(HomeDiagnostics.TAG, "Input switcher unavailable", unavailable);
+                return false;
             }
         }
         return true;

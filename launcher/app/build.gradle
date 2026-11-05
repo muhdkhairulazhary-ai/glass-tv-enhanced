@@ -12,9 +12,17 @@ android {
         targetSdk 34
         versionCode 4
         versionName '2.3'
+        manifestPlaceholders = [applicationLabel: '@string/app_name', homeHelperLabel: '@string/home_key_name']
     }
 
     buildTypes {
+        debug {
+            // Install alongside the existing launcher; no signing-key conflict or data migration.
+            applicationIdSuffix '.hometest'
+            versionNameSuffix '-home-test'
+            manifestPlaceholders = [applicationLabel: 'Glass TV Enhanced · HOME test',
+                                    homeHelperLabel: 'Glass TV HOME test · Home button']
+        }
         release {
             // R8 strips and optimises the code (AndroidX included): smaller APK, faster start on a slow TV CPU.
             minifyEnabled true

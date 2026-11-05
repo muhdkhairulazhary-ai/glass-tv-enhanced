@@ -17,11 +17,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- Needed on Android 10 to read the Wi-Fi network name; granted over adb at install time. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
     <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -39,7 +44,7 @@
     </queries>
 
     <application
-        android:label="@string/app_name"
+        android:label="${applicationLabel}"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
         android:theme="@style/Theme.TvHome"
@@ -102,12 +107,12 @@
             android:exported="false"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoDisplay" />
-        <!-- Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
-             build-and-install.sh; see HomeKeyService. -->
+            android:theme="@android:style/Theme.DeviceDefault.Dialog" />
+        <!-- User-enabled HOME/ALL_APPS helper and optional stock Home window fallback. -->
         <service
             android:name=".HomeKeyService"
-            android:label="@string/home_key_name"
+            android:directBootAware="true"
+            android:label="${homeHelperLabel}"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -134,7 +139,8 @@
         <!-- The remote's Input button (KEYCODE_TV) opens the input switcher; see InputKeyService. -->
         <service
             android:name=".InputKeyService"
-            android:exported="false"
+            android:directBootAware="true"
+            android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>

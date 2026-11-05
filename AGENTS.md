@@ -153,9 +153,11 @@ Written so that any model can follow it to the letter:
   path without spaces.
 - Configure in `launcher/app/src/main/res/values/config.xml`, or better with a theme (step 6): ask which four
   apps go in the dock and in what order, using the package names from `pm list packages -3`.
-- Build: `cd launcher && ./gradlew testReleaseUnitTest assembleRelease`. The APK must stay under 400 KB
-  (CI checks it).
-- **Check**: `launcher/app/build/outputs/apk/release/app-release.apk` exists and is about 300 KB.
+- Build: `cd launcher && ./gradlew testReleaseUnitTest assembleRelease`. The Enhanced APK must stay under
+  1 MiB (CI checks it); its bundled prayer audio alone is about 500 KB. Preserve those existing features.
+- **Check**: `launcher/app/build/outputs/apk/release/app-release.apk` exists and is about 900 KB.
+  For a keep-stock-launcher test, use the separate debug APK workflow and
+  [safe HOME testing guide](docs/PRISM-HOME-TEST.md); do not run the stock-disabling installer below.
 
 ### 5. Install and make it Home
 
