@@ -1,0 +1,108 @@
+name: Stable production APK
+
+on:
+  push:
+    branches: [main, glass-tv-stable-signing]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests and unsigned production build (no signing secrets)
+        working-directory: launcher
+        run: bash ./gradlew --no-daemon testProductionUnitTest assembleProduction
+      - name: Strict Python checks
+        env:
+          CLEANYOURTV_STRICT: '1'
+        run: python3 -m unittest discover -s tests -v
+      - name: Check identity and unsigned status
+        run: |
+          mkdir -p unsigned
+          cp launcher/app/build/outputs/apk/production/app-production-unsigned.apk unsigned/Glass-TV-Enhanced-production-unsigned.apk
+          "$ANDROID_HOME/build-tools/34.0.0/aapt" dump badging unsigned/Glass-TV-Enhanced-production-unsigned.apk > unsigned/APK-INFO.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          info = Path('unsigned/APK-INFO.txt').read_text()
+          assert "package: name='com.gathin.tvhome.production'" in info
+          assert "application-label:'Glass TV Enhanced'" in info
+          assert 'application-debuggable' not in info
+          PY
+          if "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify unsigned/Glass-TV-Enhanced-production-unsigned.apk >/dev/null 2>&1; then
+            echo 'Unexpected signature on production input; refusing to publish.'
+            exit 1
+          fi
+          cp docs/STABLE-RELEASE.md unsigned/READ-ME-NOT-INSTALLABLE.md
+          cd unsigned
+          sha256sum Glass-TV-Enhanced-production-unsigned.apk > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: UNSIGNED-production-review-${{ github.run_number }}
+          path: unsigned/
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-test-reports-${{ github.run_number }}
+          path: launcher/app/build/reports/tests/
+          if-no-files-found: ignore
+
+  sign:
+    # Fork PRs and PR merge code never receive signing secrets. Only trusted branch events sign.
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: UNSIGNED-production-review-${{ github.run_number }}
+          path: unsigned/
+      - name: Sign with permanent secret-backed keystore (required)
+        env:
+          PRODUCTION_KEYSTORE_BASE64: ${{ secrets.PRODUCTION_KEYSTORE_BASE64 }}
+          PRODUCTION_STORE_PASSWORD: ${{ secrets.PRODUCTION_STORE_PASSWORD }}
+          PRODUCTION_KEY_PASSWORD: ${{ secrets.PRODUCTION_KEY_PASSWORD }}
+          PRODUCTION_KEY_ALIAS: ${{ secrets.PRODUCTION_KEY_ALIAS }}
+          PRODUCTION_CERT_SHA256: ${{ secrets.PRODUCTION_CERT_SHA256 }}
+        run: python3 tools/signing/sign-production.py
+      - name: Package public release files only
+        run: |
+          cp docs/STABLE-RELEASE.md signed/INSTALL.md
+          cp unsigned/APK-INFO.txt signed/APK-INFO.txt
+          cd signed
+          sha256sum Glass-TV-Enhanced.apk > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Glass-TV-Enhanced-production-${{ github.run_number }}
+          path: |
+            signed/Glass-TV-Enhanced.apk
+            signed/INSTALL.md
+            signed/APK-INFO.txt
+            signed/SIGNING-CERTIFICATE.txt
+            signed/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30

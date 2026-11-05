@@ -71,7 +71,8 @@ final class CacheCleaner {
     /** Cleans in the background when it is due; {@code days} 0 means never. */
     static void maybeRun(Context ctx, int days) {
         // HOME diagnostics must never start an automatic ADB session on the user's TV.
-        if (ctx.getPackageName().endsWith(".hometest")) return;
+        if (ctx.getPackageName().endsWith(".hometest")
+                || ctx.getPackageName().endsWith(".production")) return;
         if (running) return;
         SharedPreferences p = prefs(ctx);
         long now = System.currentTimeMillis();
